@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Data dan Pilihan Google Sheet</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .highlight-red {
+            background-color: #f8d7da;
+        }
+
+        /* Ukuran lebar kolom yang sama */
+        th, td {
+            text-align: center;
+        }
+
+        th {
+            text-align: center;
+        }
+
+        /* Lebar kolom yang diatur */
+        th:nth-child(1), td:nth-child(1) {
+            width: 240px;
+            text-align: left;
+        }
+
+        th:nth-child(n+2), td:nth-child(n+2) {
+            width: 120px;
+        }
+
+        /* Spinner style */
+        #loadingSpinner {
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Pilih Wilayah, Juru dan Rekapan Data</h2>
+
+        <div class="row mb-3">
+            <!-- Dropdown Wilayah -->
+            <div class="col-md-6 mb-3">
+                <div class="form-group">
+                    <label for="wilayahDropdown">Pilih Wilayah:</label>
+                    <select class="form-control" id="wilayahDropdown">
+                        <option value="">-- Pilih Wilayah --</option>
+                        <option value="1">Wilayah 1</option>
+                        <option value="2">Wilayah 2</option>
+                        <option value="3">Wilayah 3</option>
+                        <option value="4">Wilayah 4</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Dropdown Nama Juru -->
+            <div class="col-md-6 mb-3">
+                <div class="form-group">
+                    <label for="juruDropdown">Pilih Nama Juru:</label>
+                    <select class="form-control" id="juruDropdown" disabled>
+                        <option value="">-- Pilih Nama Juru --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tampilkan Link Google Sheet -->
+        <div class="form-group">
+            <label for="googleSheetLink">Link Google Sheet:</label>
+            <input type="text" class="form-control" id="googleSheetLink" readonly>
+        </div>
+
+        <!-- Filter Tanggal -->
+        <div class="form-group">
+            <label for="dateFilter">Pilih Tanggal:</label>
+            <input type="date" class="form-control" id="dateFilter">
+        </div>
+
+        <!-- Spinner Loading -->
+        <div id="loadingSpinner" class="d-flex justify-content-center align-items-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Tabel Rekapan -->
+        <table class="table table-striped mt-3" id="rekapanTable">
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>O</th>
+                    <th>P0</th>
+                    <th>P100</th>
+                    <th>Sakit</th>
+                    <th>Izin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data akan diisi secara dinamis -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        const data = [
+            { wilayah: '1', nama: 'EMIL SALIM', id: '1Lw906Dx-uFzBZZTbYOHmVsd8xHBf_g0jpstEZe6IwKo', gid: '629954115' },
+            { wilayah: '1', nama: 'YANRIZAL', id: '1Lw906Dx-uFzBZZTbYOHmVsd8xHBf_g0jpstEZe6IwKo', gid: '2143598053' },
+            { wilayah: '2', nama: 'JAMALUDDIN', id: '1Lw906Dx-uFzBZZTbYOHmVsd8xHBf_g0jpstEZe6IwKo', gid: '1901095434' },
+            { wilayah: '2', nama: 'ALAMSYAH', id: '1Lw906Dx-uFzBZZTbYOHmVsd8xHBf_g0jpstEZe6IwKo', gid: '1446253290' },
+            { wilayah: '3', nama: 'KUSNANTO', id: '1Lw906Dx-uFzBZZTbYOHmVsd8xHBf_g0jpstEZe6IwKo', gid: '1539767816' },
+            { wilayah: '3', nama: 'ALDA IRAWAN', id: '1Lw906Dx-uFzBZZTbYOHmVsd8xHBf_g0jpstEZe6IwKo', gid: '216012663' },
+            { wilayah: '4', nama: 'IDRI RAPIS', id: '1Lw906Dx-uFzBZZTbYOHmVsd8xHBf_g0jpstEZe6IwKo', gid: '1558156392' }
+        ];
+
+        const wilayahDropdown = document.getElementById('wilayahDropdown');
+        const juruDropdown = document.getElementById('juruDropdown');
+        const googleSheetLink = document.getElementById('googleSheetLink');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const rekapanTableBody = document.querySelector('#rekapanTable tbody');
+        const dateFilter = document.getElementById('dateFilter');
+        let allData = [];
+
+        // Set nilai default date menjadi hari ini (today)
+        const today = new Date().toISOString().split('T')[0];
+        dateFilter.value = today;
+
+        // Function to show or hide spinner
+        function showSpinner(show) {
+            loadingSpinner.style.display = show ? 'flex' : 'none';
+        }
+
+        // Event listener untuk dropdown wilayah
+        wilayahDropdown.addEventListener('change', function() {
+            const selectedWilayah = this.value;
+
+            // Kosongkan dropdown nama juru
+            juruDropdown.innerHTML = '<option value="">-- Pilih Nama Juru --</option>';
+            googleSheetLink.value = ''; // Reset link Google Sheet
+            juruDropdown.disabled = true;
+
+            // Filter data berdasarkan wilayah yang dipilih
+            if (selectedWilayah) {
+                const filteredData = data.filter(item => item.wilayah === selectedWilayah);
+
+                // Aktifkan dropdown nama juru dan isi dengan nama-nama juru yang sesuai
+                juruDropdown.disabled = false;
+                filteredData.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.nama;
+                    option.textContent = item.nama;
+                    juruDropdown.appendChild(option);
+                });
+            }
+        });
+
+        // Event listener untuk dropdown juru
+        juruDropdown.addEventListener('change', function() {
+            const selectedNama = this.value;
+
+            // Cari data berdasarkan nama juru yang dipilih
+            const selectedData = data.find(item => item.nama === selectedNama);
+
+            // Jika data ditemukan, tampilkan link Google Sheet
+            if (selectedData) {
+                const sheetUrl = `https://docs.google.com/spreadsheets/d/${selectedData.id}/pub?gid=${selectedData.gid}&single=true&output=csv`;
+                googleSheetLink.value = sheetUrl;
+
+                // Show spinner while loading data
+                showSpinner(true);
+
+                // Fetch data dari Google Sheet yang dipilih
+                fetch(sheetUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
+                    .then(csvText => {
+                        allData = csvText.split('\n').slice(1).map(row => row.split(',').map(cell => cell.trim()));
+                        updateTable(); // Update table after fetch data
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                        alert('Failed to load data. Please try again.');
+                    })
+                    .finally(() => {
+                        // Hide spinner once data is processed
+                        showSpinner(false);
+                    });
+            }
+        });
+
+        // Event listener untuk filter tanggal
+        dateFilter.addEventListener('change', updateTable);
+
+        // Fungsi untuk memperbarui tabel berdasarkan tanggal yang dipilih
+        function updateTable() {
+            const selectedDate = dateFilter.value;
+
+            // Bersihkan tabel sebelum memuat data baru
+            rekapanTableBody.innerHTML = '';
+
+            // Filter data berdasarkan tanggal yang dipilih
+            const filteredData = allData.filter(row => {
+                // Ensure that row[0] (the date column) is not empty and is a valid date
+                const rowDate = row[0];
+                if (!rowDate) return false;
+                const timestamp = new Date(rowDate);
+                if (isNaN(timestamp.getTime())) return false; // Check if the date is invalid
+                const rowDateString = timestamp.toISOString().split('T')[0];
+                return rowDateString === selectedDate;
+            });
+
+            // Hitung O, P0, P100, Sakit, Izin dari kolom ke-9 (index 8)
+            const reportData = filteredData.reduce((acc, row) => {
+                const name = row[1] || "Unknown";
+                const status = row[8] || "-";
+                if (!acc[name]) {
+                    acc[name] = { O: 0, P0: 0, P100: 0, Sakit: 0, Izin: 0 };
+                }
+                if (status === "O") acc[name].O++;
+                else if (status === "P0") acc[name].P0++;
+                else if (status === "P100") acc[name].P100++;
+                else if (status === "S") acc[name].Sakit++;
+                else if (status === "I") acc[name].Izin++;
+                return acc;
+            }, {});
+
+            // Menampilkan data ke tabel
+            Object.keys(reportData).forEach(name => {
+                const row = reportData[name];
+                rekapanTableBody.insertAdjacentHTML('beforeend', `
+                    <tr>
+                        <td>${name}</td>
+                        <td>${row.O}</td>
+                        <td>${row.P0}</td>
+                        <td>${row.P100}</td>
+                        <td>${row.Sakit}</td>
+                        <td>${row.Izin}</td>
+                    </tr>
+                `);
+            });
+        }
+    </script>
+
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

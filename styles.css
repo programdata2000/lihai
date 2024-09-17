@@ -1,0 +1,31 @@
+.highlight-red {
+    background-color: #f8d7da;
+}
+
+/* Ukuran lebar kolom yang sama */
+th, td {
+    text-align: center;
+}
+
+th {
+    text-align: center;
+}
+
+/* Lebar kolom yang diatur */
+th:nth-child(1), td:nth-child(1) {
+    width: 240px;
+    text-align: left;
+}
+
+th:nth-child(n+2), td:nth-child(n+2) {
+    width: 120px;
+}
+
+/* Spinner in center */
+#loadingSpinner {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

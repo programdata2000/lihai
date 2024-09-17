@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contoh Penggunaan innerHTML dan insertAdjacentHTML</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .content {
+            margin-bottom: 20px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .dropdown {
+            text-align: center;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .additional-content {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e7f1ff;
+            border: 1px solid #b0d4ff;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Contoh Penggunaan innerHTML dan insertAdjacentHTML</h1>
+        
+        <div class="content">
+            <p id="info">Ini adalah konten awal.</p>
+        </div>
+
+        <div class="actions">
+            <button id="replaceContent">Ganti Konten dengan innerHTML</button>
+            <button id="addContent">Tambahkan Konten dengan insertAdjacentHTML</button>
+        </div>
+
+        <div class="dropdown">
+            <label for="dropdownMenu">Pilih Opsi:</label>
+            <select id="dropdownMenu">
+                <option value="">-- Pilih Opsi --</option>
+                <option value="option1">Opsi 1</option>
+                <option value="option2">Opsi 2</option>
+                <option value="option3">Opsi 3</option>
+            </select>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const replaceButton = document.getElementById('replaceContent');
+            const addButton = document.getElementById('addContent');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const infoParagraph = document.getElementById('info');
+
+            replaceButton.addEventListener('click', () => {
+                // Mengganti seluruh konten dengan innerHTML
+                infoParagraph.innerHTML = `
+                    <h2>Konten Baru dengan innerHTML</h2>
+                    <p>Selamat datang! Konten ini telah diganti menggunakan <code>innerHTML</code>.</p>
+                `;
+            });
+
+            addButton.addEventListener('click', () => {
+                // Menambahkan konten dengan insertAdjacentHTML
+                infoParagraph.insertAdjacentHTML('beforeend', `
+                    <div class="additional-content">
+                        <h3>Konten Tambahan</h3>
+                        <p>Ini adalah konten tambahan yang ditambahkan dengan <code>insertAdjacentHTML</code>.</p>
+                    </div>
+                `);
+            });
+
+            dropdownMenu.addEventListener('change', (event) => {
+                const selectedOption = event.target.value;
+                switch (selectedOption) {
+                    case 'option1':
+                        infoParagraph.innerHTML = '<p>Anda memilih Opsi 1</p>';
+                        break;
+                    case 'option2':
+                        infoParagraph.innerHTML = '<p>Anda memilih Opsi 2</p>';
+                        break;
+                    case 'option3':
+                        infoParagraph.innerHTML = '<p>Anda memilih Opsi 3</p>';
+                        break;
+                    default:
+                        infoParagraph.innerHTML = '<p>Silakan pilih opsi dari dropdown</p>';
+                        break;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

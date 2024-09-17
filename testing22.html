@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contoh Penggunaan &lt;span&gt; dalam HTML</title>
+  <style>
+    /* CSS untuk penggayaan teks dengan span */
+    .highlight {
+      color: red; /* Mengatur teks menjadi merah */
+      font-weight: bold; /* Membuat teks menjadi tebal */
+    }
+
+    /* CSS untuk tooltip menggunakan span */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 5px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%; /* Posisi tooltip */
+      left: 50%;
+      margin-left: -60px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <!-- Penggunaan <span> untuk menandai teks dengan penggayaan khusus -->
+  <p>Selamat datang di situs kami! Nikmati <span class="highlight">diskon 50%</span> untuk semua produk di bulan ini.</p>
+
+  <!-- Penggunaan <span> untuk membuat tooltip -->
+  <p>
+    Untuk informasi lebih lanjut, <span class="tooltip">arahkan mouse ke sini
+      <span class="tooltiptext">Ini adalah tooltip yang muncul ketika Anda mengarahkan mouse!</span>
+    </span>.
+  </p>
+
+  <!-- Penggunaan <span> untuk manipulasi JavaScript -->
+  <p>Klik tombol ini untuk mengubah jumlah: <span id="clickCount">0</span></p>
+  <button onclick="incrementCount()">Klik Saya!</button>
+
+  <script>
+    // JavaScript untuk manipulasi elemen span
+    function incrementCount() {
+      let countElement = document.getElementById('clickCount');
+      let currentCount = parseInt(countElement.textContent, 10);
+      countElement.textContent = currentCount + 1;
+    }
+  </script>
+</body>
+</html>

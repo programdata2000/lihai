@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counter dengan Spinner Loading</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Spinner style */
+        #loadingSpinner {
+            display: none; /* Initially hidden */
+        }
+
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Counter dengan Spinner Loading</h2>
+        <p id="counter">Menghitung: 0</p>
+        <div id="loadingSpinner" class="d-flex justify-content-center align-items-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <button class="btn btn-primary mt-3" id="startButton">Mulai Hitung</button>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.getElementById('startButton').addEventListener('click', function() {
+            const counterElement = document.getElementById('counter');
+            const spinner = document.getElementById('loadingSpinner');
+
+            // Show spinner
+            spinner.style.display = 'flex';
+
+            let currentValue = 0;
+
+            // Function to update the counter
+            function updateCounter() {
+                if (currentValue <= 100) {
+                    counterElement.textContent = `Menghitung: ${currentValue}`;
+                    currentValue += 1; // Step 1
+
+                    // Continue updating every 50 milliseconds
+                    setTimeout(updateCounter, 50);
+                } else {
+                    // Ensure spinner is hidden after the counter reaches 100
+                    setTimeout(() => {
+                        spinner.style.display = 'none';
+                    }, 50); // Small delay to ensure spinner is hidden after the last update
+                }
+            }
+
+            // Start counting
+            updateCounter();
+        });
+    </script>
+
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
