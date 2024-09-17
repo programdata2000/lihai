@@ -1,0 +1,18 @@
+
+
+.container{
+    width: 100%;
+    height: auto;
+    overflow-x: auto;
+}
+.content{
+    width: 200%;
+    
+}
+.judul{
+
+    text-align: center;
+    color: black;
+    
+    
+}
