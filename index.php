@@ -12,7 +12,7 @@
         <a href="#" class="brand">PSDA Bukittinggi</a>
         <div class="navigation">
             <div class="nav_items">
-                <a href="">Home2222222</a>
+                <a href="">HomeAbsenMasalah</a>
                 <a href="">Rekap</a>
                 <a href="">Survey</a>
                 <a href="">Pengaduan</a>
